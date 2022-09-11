@@ -1,12 +1,12 @@
 pipeline {
     agent any
     tools{
-        maven 'maven_3_5_0'
+        maven 'maven'
     }
     stages{
         stage('Build Maven'){
             steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Java-Techie-jt/devops-automation']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: '41c5035d-0ded-4a42-94cd-2ae2bf76bf0d', url: 'https://github.com/Chowdary1997/docker_auto.git']]])
                 sh 'mvn clean install'
             }
         }
@@ -20,20 +20,14 @@ pipeline {
         stage('Push image to Hub'){
             steps{
                 script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u javatechie -p ${dockerhubpwd}'
+                   withCredentials([string(credentialsId: '25cb40a6-1420-4a0e-98ee-d1c36b4a9b37', variable: 'secret text')]) {
+                   sh 'docker login -u rajendra.daggubati1997@gmail.com -p ${secret text}'
 
 }
                    sh 'docker push javatechie/devops-integration'
                 }
             }
         }
-        stage('Deploy to k8s'){
-            steps{
-                script{
-                    kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'k8sconfigpwd')
-                }
-            }
-        }
+        
     }
 }
